@@ -1,0 +1,6 @@
+requirements:
+  - pyyaml
+  - cffi
+  - pygit2
+  - sarge
+  - python-json-logger

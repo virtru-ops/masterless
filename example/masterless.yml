@@ -1,0 +1,7 @@
+formulas:
+  common:
+    url: https://github.com/virtru/common-formula.git
+  #logstash:
+    #url: https://github.com/virtru/logstash-formula.git
+  node-app:
+    url: https://github.com/virtru/node-app-formula.git
