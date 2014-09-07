@@ -2,7 +2,7 @@ import os
 import yaml
 import tempfile
 import shutil
-from sarge import Capture, capture_both
+from sarge import capture_both
 from .utils import cd
 import logging
 
