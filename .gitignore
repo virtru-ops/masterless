@@ -72,3 +72,6 @@ docs/_build
 
 # NPM
 node_modules
+
+# Masterless build
+masterless-build
