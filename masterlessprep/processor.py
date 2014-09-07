@@ -67,17 +67,17 @@ class MasterlessTemplate(object):
         self._project_path = project_path
         self._build_path = build_path
 
+    def project_path(self, *joins):
+        return os.path.join(self._project_path, *joins)
+
+    def build_path(self, *joins):
+        return os.path.join(self._build_path, *joins)
+
     def build(self):
         logger.debug("Starting Build")
         template_obj = self._template_obj
-        project_path = self._project_path
-        build_path = self._build_path
 
-        if os.path.exists(build_path):
-            shutil.rmtree(build_path)
-
-        # Ensure the build directory exists
-        os.makedirs(build_path)
+        self._initialize_build_path()
 
         # Git clone all of the formulas into a temporary directory
         temp_git_clone_path = tempfile.mkdtemp()
@@ -99,7 +99,7 @@ class MasterlessTemplate(object):
                 # Generate the paths for moving files around
                 old_path = os.path.join(temp_git_clone_path, repo_name,
                                         formula_name)
-                new_path = os.path.join(build_path, 'states', formula_name)
+                new_path = self.build_path('states', formula_name)
 
                 # Move the files
                 shutil.move(old_path, new_path)
@@ -115,6 +115,14 @@ class MasterlessTemplate(object):
 
         states_top.export_top_sls(self.build_path('states', 'top.sls'))
         pillars_top.export_top_sls(self.build_path('pillars', 'top.sls'))
+
+    def _initialize_build_path(self):
+        build_path = self._build_path
+        if os.path.exists(build_path):
+            shutil.rmtree(build_path)
+
+        # Ensure the build directory exists
+        os.makedirs(build_path)
 
     def _copy_project_dir_to_build(self, dirname, create_if_not_exist=True):
         src_path = self.project_path(dirname)
@@ -171,9 +179,3 @@ class MasterlessTemplate(object):
             top_name = name[:-4]
             logger.debug("Adding top %s" % top_name)
             top.add(top_name)
-
-    def project_path(self, *joins):
-        return os.path.join(self._project_path, *joins)
-
-    def build_path(self, *joins):
-        return os.path.join(self._build_path, *joins)
