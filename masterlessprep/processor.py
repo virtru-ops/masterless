@@ -34,8 +34,8 @@ class TopCollection(object):
     def __init__(self, initial_top):
         self._top = initial_top
 
-    def add(self, include):
-        self._top['base']['*'].append(include)
+    def add(self, includes):
+        self._top['base']['*'].extend(includes)
 
     def export_top_sls(self, dest):
         dest_file = open(dest, 'w')
@@ -92,10 +92,14 @@ class MasterlessTemplate(object):
         self._copy_project_dir_to_build('pillars')
 
         try:
-            formula_path_infos = self._load_formulas(formulas,
-                                                     temp_git_clone_path)
+            formula_infos = self._load_formulas(formulas,
+                                                temp_git_clone_path)
 
-            for repo_name, formula_name in formula_path_infos:
+            for formula_name, formula_info in formula_infos:
+                repo_name = formula_info['repo_name']
+
+                formula_includes = formula_info.get('includes', [formula_name])
+
                 # Generate the paths for moving files around
                 old_path = os.path.join(temp_git_clone_path, repo_name,
                                         formula_name)
@@ -105,7 +109,7 @@ class MasterlessTemplate(object):
                 shutil.move(old_path, new_path)
 
                 # Automatically add the formula to the top file
-                states_top.add(formula_name)
+                states_top.add(formula_includes)
         finally:
             # Delete the temp directory no matter what happens
             shutil.rmtree(temp_git_clone_path)
@@ -141,7 +145,7 @@ class MasterlessTemplate(object):
             shutil.copytree(src_path, dest_path)
 
     def _load_formulas(self, formulas, clone_path):
-        formula_path_infos = []
+        formula_infos = []
         with cd(clone_path):
             for formula_name, formula_info in formulas.iteritems():
                 formula_url = formula_info['url']
@@ -151,15 +155,22 @@ class MasterlessTemplate(object):
 
                 repo_name = formula_url.split('/')[-1][:-4]
 
+                formula_info['repo_name'] = repo_name
+
                 git_clone(repo_name, formula_url, formula_rev)
 
-                formula_path_info = (repo_name, formula_name)
+                formula_path_info = (formula_name, formula_info)
 
-                formula_path_infos.append(formula_path_info)
-        return formula_path_infos
+                formula_infos.append(formula_path_info)
+        return formula_infos
 
     def _process_tops_in_project_dir(self, dirname, top):
         src_path = self.project_path(dirname)
+
+        if not os.path.isdir(src_path):
+            return
+
+        tops = []
 
         # Process all of the files in the path
         for name in os.listdir(src_path):
@@ -178,4 +189,6 @@ class MasterlessTemplate(object):
             # Only add states ignore all other files
             top_name = name[:-4]
             logger.debug("Adding top %s" % top_name)
-            top.add(top_name)
+            tops.append(top_name)
+
+        top.add(tops)
