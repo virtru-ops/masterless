@@ -20,11 +20,12 @@ setup(
     zip_safe=False,
     install_requires=[
         'pyyaml==3.11',
-        'sarge>=0.1'
+        'sarge>=0.1',
+        'python-json-logger'
     ],
     entry_points={
         'console_scripts': [
-            'salt-masterless-prep=masterlessprep.cli:run',
+            'masterless=masterlessprep.cli:run',
         ]
     },
     classifiers=[
