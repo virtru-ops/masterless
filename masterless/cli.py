@@ -12,7 +12,8 @@ from .processor import MasterlessTemplate
 DESCRIPTION = 'Prepares a masterless template to be used as a salt masterless folder structure'
 
 parser = argparse.ArgumentParser(description=DESCRIPTION)
-parser.add_argument('masterless_file', help='The masterless.yml file')
+parser.add_argument('--masterless-file', dest="masterless_file",
+                    default='masterless.yml', help='The masterless.yml file')
 #parser.add_argument('-d, --destination', help='The destination')
 
 

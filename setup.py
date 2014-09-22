@@ -5,9 +5,9 @@ VERSION = '0.1.0'
 LONG_DESCRIPTION = open('README.rst').read()
 
 setup(
-    name='salt-masterless-prep',
+    name='masterless',
     version=VERSION,
-    description="Salt masterless preparer",
+    description="Masterless - masterless preparer for salt",
     long_description=LONG_DESCRIPTION,
     keywords='',
     author='Reuven V. Gonzales',
@@ -25,7 +25,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'masterless=masterlessprep.cli:run',
+            'masterless=masterless.cli:run',
         ]
     },
     classifiers=[

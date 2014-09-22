@@ -1,5 +1,5 @@
-Salt Masterless Preparer
-========================
+Masterless
+==========
 
 This project defines a structure that can be used to define a salt masterless
 deployment meant to be used with something like packer.
